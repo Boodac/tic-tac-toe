@@ -85,6 +85,7 @@ form img {
     top: 0.5rem;
     height: 2rem;
     width: 2rem;
+    filter: invert(18%) sepia(100%) saturate(7477%) hue-rotate(2deg) brightness(105%) contrast(114%);
 }
 
 #modal {

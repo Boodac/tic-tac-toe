@@ -105,21 +105,44 @@ const display = (function() {
     const marquee = document.getElementById("marquee");
     const modal = document.querySelector("#modal");
     const container = document.querySelector(".TTOcontainer");
-    const player1 = createPlayer("Player 1");
-    const player2 = createPlayer("Player 2");
+    let player1 = createPlayer("Player 1");
+    let player2 = createPlayer("Player 2");
+    
     const resetBtn = document.querySelector("#reset");
-    const settingsBtn = document.querySelector("#settings");
-    settingsBtn.addEventListener("click", e=> {
-        displayModal();
-    });
     resetBtn.addEventListener("click", e => {
         game.reset();
+        [game.players.one.name, game.players.two.name] = [game.players.two.name, game.players.one.name];
         init();
     });
+
+    const settingsBtn = document.querySelector("#settings");
+    settingsBtn.addEventListener("click", e => {
+        displayModal();
+    });
+    
+    const closeBtn = document.querySelector("#closeButton");
+    closeBtn.addEventListener("click", e => {
+        closeModal();
+    });
+
+    const saveButton = document.querySelector("#saveButton");
+    saveButton.addEventListener("click", e => {
+        const entries = document.querySelectorAll("input");
+        if(entries[0].value === game.players.one.name && entries[1].value === game.players.two.name) {
+            closeModal();
+        }
+        else {
+            game.players.one.name = entries[0].value;
+            game.players.two.name = entries[1].value;
+            init();
+        }
+    });
+
     const game = createGame(player1, player2);
     let size = 0;
 
     const init = () => {
+        marquee.textContent = game.players.one.name + " " + "(" + game.players.one.mark + ") " + "goes first.";
         modal.style.display = "none";
         size = game.option("size");
         container.textContent="";
@@ -134,7 +157,6 @@ const display = (function() {
                 container.appendChild(temp);
             }
         }
-        marquee.textContent = game.players.one.name + " " + "(" + game.players.one.mark + ") " + "goes first.";
     };
 
     const handleClick = (e) => {
@@ -148,7 +170,7 @@ const display = (function() {
         e.srcElement.appendChild(fill);
         let winBool = game.checkWin();
 
-        if(!winBool && game.turn() < maxSize()) marquee.textContent = "Turn " + game.turn() + ": Mark placed at (" + ++xCoord + ", " + ++yCoord + ") - It is now " + game.players.current.name + "'s turn.";
+        if(!winBool && game.turn() < maxSize()) marquee.textContent = "Turn " + game.turn() + ": Move placed at (" + ++xCoord + ", " + ++yCoord + ") - It is now " + game.players.current.name + "'s turn.";
         else if(winBool) {
             marquee.textContent = game.players.current.name + " " + "(" + game.players.current.mark + ") wins on turn " + game.turn();
         }
@@ -161,6 +183,10 @@ const display = (function() {
 
     const displayModal = () => {
         if(modal.style.display === "none") modal.style.display = "flex";
+    };
+
+    const closeModal = () => {
+        modal.style.display = "none";
     }
 
     return { init };
