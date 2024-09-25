@@ -1,21 +1,36 @@
 function createGame(obj1, obj2) {
-    const options = {default: ".", x: "x" , o: "o", size: 3}
+    const options = { blank: ".", x: "x" , o: "o", size: 3 };
     const players = {
                     one: {mark: options.x, ...obj1}, 
                     two: {mark: options.o, ...obj2},
                     current: {}
                 }
-    let board = createBoard();
+    const createBoard = () => {
+        let state = [];
+        for(let i = 0 ; i < options.size ; i++) {
+            let row = [];
+            for(let j = 0 ; j < options.size ; j++) {
+                row.push(options.blank);
+            }
+            state.push(row);
+        };
+        return state;
+    }            
+    let board = createBoard(); // board[Ycoord][Xcoord] - the ROW is the yCoord, the CELL is the xCoord
     let winBool = false;
     let marksMade = 0;
     players.current = players.one;
     const changeTurn = () => { players.current === players.one ? players.current = players.two : players.current = players.one; }
 
-    const makeMark = (xCoord, yCoord) => { // 
+    const makeMark = (xCoord, yCoord) => {
         marksMade++;
         let row = board[yCoord];
-        (row[xCoord] === options.default) ? row[xCoord] = players.current.mark : console.error("error attempting to place mark");
+        (row[xCoord] === options.blank) ? row[xCoord] = players.current.mark : console.error("error attempting to place mark");
         checkWin() ? declareWin(players) : changeTurn();
+    }
+
+    const getMark = (xCoord, yCoord) => {
+        return board[yCoord][xCoord];
     }
     
     const checkWin = () => {
@@ -39,7 +54,7 @@ function createGame(obj1, obj2) {
 
         const checkLines = matrix => {
             matrix.forEach(row => {
-                if(winBool || row[0] === options.default) return;
+                if(winBool || row[0] === options.blank) return;
                 winBool = row.every(value => value === row[0]);
             });
         }
@@ -51,38 +66,36 @@ function createGame(obj1, obj2) {
     const declareWin = (players) => { 
         // external APIs use checkWin()
         console.log("Win detected");
-        players.current.win();
+        players.current.win(this);
     }
 
     const reset = () => {
+        players.one.reset();
+        players.two.reset();
         players.current = players.one;
         winBool = false;
         marksMade = 0;
         board = createBoard();
     }
 
-    const createBoard = () => {
-        let state = [];
-        for(let i = 0 ; i < options.size ; i++) {
-            let row = [];
-            for(let j = 0 ; j < options.size ; j++) {
-                row.push(options.default);
-            }
-            state.push(row);
-        };
-        return state;
+    const changeOption = (option, value) => {
+        if(!(option in options)) return false;
+        options[option] = value; return true;
     }
 
-    return { players, makeMark, checkWin, board, options, reset };
+    return { players, makeMark, getMark, checkWin, reset, changeOption };
 }
 
 function createPlayer(name) {
     let scoreTotal = 0;
-    const win = () => ++scoreTotal;
+    const reset = () => scoreTotal = 0;
+    const win = (gameObj) => gameObj ? ++scoreTotal : scoreTotal;
     const getScore = () => scoreTotal;
-    return { name, win, getScore };
+    return { name, win, getScore, reset };
 }
 
 function displayHandler() {
 
 }
+
+const game = createGame(createPlayer("john"), createPlayer("fred"));
