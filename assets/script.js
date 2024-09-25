@@ -165,7 +165,7 @@ const display = (function() {
         game.setMark(xCoord, yCoord);
         const fill = document.createElement("img");
         fill.src = "./assets/" + game.getMark(xCoord, yCoord) + ".svg";
-        fill.draggable = "false";
+        fill.setAttribute("draggable", false);
         e.target.appendChild(fill);
         let winBool = game.checkWin();
 
