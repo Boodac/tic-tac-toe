@@ -131,6 +131,7 @@ const display = (function() {
         else {
             game.players.one.name = entries[0].value;
             game.players.two.name = entries[1].value;
+            game.reset();
             init();
         }
     });
@@ -164,6 +165,7 @@ const display = (function() {
         game.setMark(xCoord, yCoord);
         const fill = document.createElement("img");
         fill.src = "./assets/" + game.getMark(xCoord, yCoord) + ".svg";
+        fill.draggable = "false";
         e.target.appendChild(fill);
         let winBool = game.checkWin();
 
