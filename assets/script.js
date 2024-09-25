@@ -1,27 +1,26 @@
 function createGame(obj1, obj2) {
     const options = {default: ".", x: "x" , o: "o", size: 3}
-    const player1 = {mark: options.x, ...obj1};
-    const player2 = {mark: options.o, ...obj2};
+    const players = {
+                    one: {mark: options.x, ...obj1}, 
+                    two: {mark: options.o, ...obj2},
+                    current: {}
+                }
+    let board = createBoard();
     let winBool = false;
-    let currPlayer = player1;
-    const board = (function() {
-        let state = [];
-        for(let i = 0 ; i < options.size ; i++) {
-            let row = [];
-            for(let j = 0 ; j < options.size ; j++) {
-                row.push(options.default);
-            }
-            state.push(row);
-        };
-        return state;
-    })();
-    const changeTurn = () => { (currPlayer === player1) ? currPlayer = player2 : currPlayer = player1; }
+    let marksMade = 0;
+    players.current = players.one;
+    const changeTurn = () => { players.current === players.one ? players.current = players.two : players.current = players.one; }
+
     const makeMark = (xCoord, yCoord) => { // 
+        marksMade++;
         let row = board[yCoord];
-        (row[xCoord] === ".") ? row[xCoord] = currPlayer.mark : console.log("error attempting to place mark");
-        checkWin() ? declareWin(currPlayer) : changeTurn();
+        (row[xCoord] === options.default) ? row[xCoord] = players.current.mark : console.error("error attempting to place mark");
+        checkWin() ? declareWin(players) : changeTurn();
     }
+    
     const checkWin = () => {
+        if(marksMade < options.size*2-1) return false; // preserve resources if a win is not possible
+        
         const diags = (function () { // create diagonals
             let top = [];
             for(let i = 0 ; i < options.size ; i++) {
@@ -33,25 +32,48 @@ function createGame(obj1, obj2) {
             }
             return [ top, bottom ];
         })();
+
         const cols = board[0].map( // transpose the board
             (column, i) => board.map(row => row[i])
         )
-        const checkLines = (matrix) => {
+
+        const checkLines = matrix => {
             matrix.forEach(row => {
-                if(winBool) return;
-                if(row[0] === options.default) return;
+                if(winBool || row[0] === options.default) return;
                 winBool = row.every(value => value === row[0]);
             });
         }
+
         checkLines(board); checkLines(diags); checkLines(cols);
         return winBool;
     }
-    const declareWin = (currPlayer) => {
+    
+    const declareWin = (players) => { 
+        // external APIs use checkWin()
         console.log("Win detected");
-        currPlayer.win();
-        winBool = false;
+        players.current.win();
     }
-    return { player1, player2, makeMark, checkWin, board };
+
+    const reset = () => {
+        players.current = players.one;
+        winBool = false;
+        marksMade = 0;
+        board = createBoard();
+    }
+
+    const createBoard = () => {
+        let state = [];
+        for(let i = 0 ; i < options.size ; i++) {
+            let row = [];
+            for(let j = 0 ; j < options.size ; j++) {
+                row.push(options.default);
+            }
+            state.push(row);
+        };
+        return state;
+    }
+
+    return { players, makeMark, checkWin, board, options, reset };
 }
 
 function createPlayer(name) {
@@ -60,4 +82,7 @@ function createPlayer(name) {
     const getScore = () => scoreTotal;
     return { name, win, getScore };
 }
-const game = createGame(createPlayer("john"), createPlayer("milton"));
+
+function displayHandler() {
+
+}
