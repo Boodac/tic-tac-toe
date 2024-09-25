@@ -23,10 +23,10 @@ function createGame(obj1, obj2) {
     const changeTurn = () => { players.current === players.one ? players.current = players.two : players.current = players.one; }
 
     const setMark = (xCoord, yCoord) => {
-        marksMade++;
         let row = board[yCoord];
         (row[xCoord] === options.blank) ? row[xCoord] = players.current.mark : console.error("error attempting to place mark");
         checkWin() ? declareWin(players) : changeTurn();
+        marksMade++;
     }
 
     const getMark = (xCoord, yCoord) => {
@@ -64,7 +64,7 @@ function createGame(obj1, obj2) {
     }
     
     const declareWin = (players) => { 
-        players.current.win(this);
+        players.current.win(checkWin());
     }
 
     const reset = () => {
@@ -96,7 +96,7 @@ function createGame(obj1, obj2) {
 function createPlayer(name) {
     let scoreTotal = 0;
     const reset = () => scoreTotal = 0;
-    const win = (gameObj) => gameObj ? ++scoreTotal : scoreTotal;
+    const win = (bool) => bool ? ++scoreTotal : scoreTotal;
     const getScore = () => scoreTotal;
     return { name, win, getScore, reset };
 }
@@ -161,13 +161,13 @@ const display = (function() {
 
     const handleClick = (e) => {
         if(game.checkWin()) return;
-        if(e.srcElement.textContent) return;
-        let xCoord = e.srcElement.id.substring(1).substring(0, e.srcElement.id.indexOf("-")-1);
-        let yCoord = e.srcElement.id.substring(1).substring(e.srcElement.id.indexOf("-"));
+        if(e.target.nodeName === "IMG") return;
+        let xCoord = e.target.id.substring(1).substring(0, e.target.id.indexOf("-")-1);
+        let yCoord = e.target.id.substring(1).substring(e.target.id.indexOf("-"));
         game.setMark(xCoord, yCoord);
         const fill = document.createElement("img");
         fill.src = "./assets/" + game.getMark(xCoord, yCoord) + ".svg";
-        e.srcElement.appendChild(fill);
+        e.target.appendChild(fill);
         let winBool = game.checkWin();
 
         if(!winBool && game.turn() < maxSize()) marquee.textContent = "Turn " + game.turn() + ": Move placed at (" + ++xCoord + ", " + ++yCoord + ") - It is now " + game.players.current.name + "'s turn.";
