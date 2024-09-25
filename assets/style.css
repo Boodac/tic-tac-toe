@@ -35,6 +35,11 @@ main div {
     width: min(80dvh, 80dvw);
 }
 
+img {
+    width: 100%;
+    aspect-ratio: 1;
+}
+
 .cell {
     background-color: yellow;
     border: 1px solid black;
@@ -48,4 +53,9 @@ footer {
     width: 100dvw;
     flex-grow: 0;
     background-color: #ccc;
+    display: grid;
+}
+
+button {
+    padding: 1rem;
 }

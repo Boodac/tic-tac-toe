@@ -1,5 +1,5 @@
 function createGame(obj1, obj2) {
-    const options = { blank: ".", x: "x" , o: "o", size: 3 };
+    const options = { blank: ".", x: "X" , o: "O", size: 3 };
     const players = {
                     one: {mark: options.x, ...obj1}, 
                     two: {mark: options.o, ...obj2},
@@ -64,7 +64,6 @@ function createGame(obj1, obj2) {
     }
     
     const declareWin = (players) => { 
-        console.log("Win detected");
         players.current.win(this);
     }
 
@@ -87,7 +86,11 @@ function createGame(obj1, obj2) {
         return options[opt];
     }
 
-    return { players, setMark, getMark, checkWin, reset, changeOption, option };    
+    const turn = () => {
+        return marksMade;
+    }
+
+    return { players, setMark, getMark, checkWin, reset, changeOption, option, turn };    
 }
 
 function createPlayer(name) {
@@ -99,13 +102,21 @@ function createPlayer(name) {
 }
 
 const display = (function() {
+    const marquee = document.getElementById("marquee");
     const container = document.querySelector(".TTOcontainer");
     const player1 = createPlayer("Player 1");
     const player2 = createPlayer("Player 2");
+    const resetBtn = document.querySelector("#reset");
+    resetBtn.addEventListener("click", e => {
+        game.reset();
+        init();
+    });
     const game = createGame(player1, player2);
-    let size = game.option("size");
+    let size = 0;
 
     const init = () => {
+        size = game.option("size");
+        container.textContent="";
         container.style.gridTemplateColumns = "repeat(" + size + ", 1fr)";
         container.style.gridTemplateRows = "repeat(" + size + ", max-content)";
         for( let i = 0 ; i < size ; i++ ) {
@@ -125,8 +136,20 @@ const display = (function() {
         let xCoord = e.srcElement.id.substring(1).substring(0, e.srcElement.id.indexOf("-")-1);
         let yCoord = e.srcElement.id.substring(1).substring(e.srcElement.id.indexOf("-"));
         game.setMark(xCoord, yCoord);
-        e.srcElement.textContent = game.getMark(xCoord, yCoord);
-        console.log(xCoord + ", " + yCoord);
+        const fill = document.createElement("img");
+        fill.src = "./assets/" + game.getMark(xCoord, yCoord) + ".svg";
+        e.srcElement.appendChild(fill);
+        let winBool = game.checkWin();
+
+        if(!winBool && game.turn() < maxSize()) marquee.textContent = "Turn " + game.turn() + ". Mark placed at (" + ++xCoord + ", " + ++yCoord + ") - It is now " + game.players.current.mark + "'s turn.";
+        else if(winBool) {
+            marquee.textContent = game.getMark(xCoord, yCoord) + " wins on turn " + game.turn();
+        }
+        else marquee.textContent = "It's a draw. Reset to play again.";
+    };
+
+    const maxSize = () => {
+        return size * size;
     };
 
     return { init };
