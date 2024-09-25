@@ -103,10 +103,15 @@ function createPlayer(name) {
 
 const display = (function() {
     const marquee = document.getElementById("marquee");
+    const modal = document.querySelector("#modal");
     const container = document.querySelector(".TTOcontainer");
     const player1 = createPlayer("Player 1");
     const player2 = createPlayer("Player 2");
     const resetBtn = document.querySelector("#reset");
+    const settingsBtn = document.querySelector("#settings");
+    settingsBtn.addEventListener("click", e=> {
+        displayModal();
+    });
     resetBtn.addEventListener("click", e => {
         game.reset();
         init();
@@ -115,6 +120,7 @@ const display = (function() {
     let size = 0;
 
     const init = () => {
+        modal.style.display = "none";
         size = game.option("size");
         container.textContent="";
         container.style.gridTemplateColumns = "repeat(" + size + ", 1fr)";
@@ -128,6 +134,7 @@ const display = (function() {
                 container.appendChild(temp);
             }
         }
+        marquee.textContent = game.players.one.name + " " + "(" + game.players.one.mark + ") " + "goes first.";
     };
 
     const handleClick = (e) => {
@@ -141,9 +148,9 @@ const display = (function() {
         e.srcElement.appendChild(fill);
         let winBool = game.checkWin();
 
-        if(!winBool && game.turn() < maxSize()) marquee.textContent = "Turn " + game.turn() + ". Mark placed at (" + ++xCoord + ", " + ++yCoord + ") - It is now " + game.players.current.mark + "'s turn.";
+        if(!winBool && game.turn() < maxSize()) marquee.textContent = "Turn " + game.turn() + ": Mark placed at (" + ++xCoord + ", " + ++yCoord + ") - It is now " + game.players.current.name + "'s turn.";
         else if(winBool) {
-            marquee.textContent = game.getMark(xCoord, yCoord) + " wins on turn " + game.turn();
+            marquee.textContent = game.players.current.name + " " + "(" + game.players.current.mark + ") wins on turn " + game.turn();
         }
         else marquee.textContent = "It's a draw. Reset to play again.";
     };
@@ -151,6 +158,10 @@ const display = (function() {
     const maxSize = () => {
         return size * size;
     };
+
+    const displayModal = () => {
+        if(modal.style.display === "none") modal.style.display = "flex";
+    }
 
     return { init };
 })();
