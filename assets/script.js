@@ -68,8 +68,6 @@ function createGame(obj1, obj2) {
     }
 
     const reset = () => {
-        players.one.reset();
-        players.two.reset();
         players.current = players.one;
         winBool = false;
         marksMade = 0;
@@ -111,7 +109,6 @@ const display = (function() {
     const resetBtn = document.querySelector("#reset");
     resetBtn.addEventListener("click", e => {
         game.reset();
-        [game.players.one.name, game.players.two.name] = [game.players.two.name, game.players.one.name];
         init();
     });
 
