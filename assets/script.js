@@ -83,7 +83,12 @@ function createGame(obj1, obj2) {
         options[option] = value; return true;
     }
 
-    return { players, makeMark, getMark, checkWin, reset, changeOption };
+    const option = (opt) => {
+        if(!(opt in options)) return false;
+        return options[opt];
+    }
+
+    return { players, makeMark, getMark, checkWin, reset, changeOption, option };
 }
 
 function createPlayer(name) {
@@ -95,7 +100,27 @@ function createPlayer(name) {
 }
 
 function displayHandler() {
+    const container = document.querySelector(".TTOcontainer");
+    const player1 = createPlayer("Player 1");
+    const player2 = createPlayer("Player 2");
+    const game = createGame(player1, player2);
+    let size = game.option("size");
 
+    const init = () => {
+        container.style.gridTemplateColumns = "repeat(" + size + ", 1fr)";
+        container.style.gridTemplateRows = "repeat(" + size + ", max-content)";
+        for( let i = 0 ; i < size ; i++ ) {
+            for( let j = 0 ; j < size ; j++ ) {
+                const temp = document.createElement("div");
+                temp.classList.add("cell");
+                temp.id = "_" + j + "-" + i;
+                container.appendChild(temp);
+            }
+        }
+    };
+
+    return { init };
 }
 
-const game = createGame(createPlayer("john"), createPlayer("fred"));
+const display = displayHandler();
+display.init();
