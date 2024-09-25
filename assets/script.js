@@ -5,7 +5,7 @@ function createGame(obj1, obj2) {
                     two: {mark: options.o, ...obj2},
                     current: {}
                 }
-    const createBoard = () => {
+    const createBoard = () => { 
         let state = [];
         for(let i = 0 ; i < options.size ; i++) {
             let row = [];
@@ -16,13 +16,13 @@ function createGame(obj1, obj2) {
         };
         return state;
     }            
-    let board = createBoard(); // board[Ycoord][Xcoord] - the ROW is the yCoord, the CELL is the xCoord
+    let board = createBoard();
     let winBool = false;
     let marksMade = 0;
     players.current = players.one;
     const changeTurn = () => { players.current === players.one ? players.current = players.two : players.current = players.one; }
 
-    const makeMark = (xCoord, yCoord) => {
+    const setMark = (xCoord, yCoord) => {
         marksMade++;
         let row = board[yCoord];
         (row[xCoord] === options.blank) ? row[xCoord] = players.current.mark : console.error("error attempting to place mark");
@@ -64,7 +64,6 @@ function createGame(obj1, obj2) {
     }
     
     const declareWin = (players) => { 
-        // external APIs use checkWin()
         console.log("Win detected");
         players.current.win(this);
     }
@@ -88,7 +87,7 @@ function createGame(obj1, obj2) {
         return options[opt];
     }
 
-    return { players, makeMark, getMark, checkWin, reset, changeOption, option };
+    return { players, setMark, getMark, checkWin, reset, changeOption, option };    
 }
 
 function createPlayer(name) {
@@ -99,7 +98,7 @@ function createPlayer(name) {
     return { name, win, getScore, reset };
 }
 
-function displayHandler() {
+const display = (function() {
     const container = document.querySelector(".TTOcontainer");
     const player1 = createPlayer("Player 1");
     const player2 = createPlayer("Player 2");
@@ -114,13 +113,23 @@ function displayHandler() {
                 const temp = document.createElement("div");
                 temp.classList.add("cell");
                 temp.id = "_" + j + "-" + i;
+                temp.addEventListener("click", event => handleClick(event));
                 container.appendChild(temp);
             }
         }
     };
 
-    return { init };
-}
+    const handleClick = (e) => {
+        if(game.checkWin()) return;
+        if(e.srcElement.textContent) return;
+        let xCoord = e.srcElement.id.substring(1).substring(0, e.srcElement.id.indexOf("-")-1);
+        let yCoord = e.srcElement.id.substring(1).substring(e.srcElement.id.indexOf("-"));
+        game.setMark(xCoord, yCoord);
+        e.srcElement.textContent = game.getMark(xCoord, yCoord);
+        console.log(xCoord + ", " + yCoord);
+    };
 
-const display = displayHandler();
+    return { init };
+})();
+
 display.init();
