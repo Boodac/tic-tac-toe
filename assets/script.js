@@ -140,8 +140,8 @@ const display = (function() {
     let size = 0;
 
     const init = () => {
+        closeModal();
         marquee.textContent = game.players.one.name + " " + "(" + game.players.one.mark + ") " + "goes first.";
-        modal.style.display = "none";
         size = game.option("size");
         container.textContent="";
         container.style.gridTemplateColumns = "repeat(" + size + ", 1fr)";
