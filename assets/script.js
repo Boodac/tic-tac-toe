@@ -1,5 +1,5 @@
 function createGame(obj1, obj2) {
-    const options = { blank: ".", x: "X" , o: "O", size: 13 };
+    const options = { blank: ".", x: "X" , o: "O", size: 3 };
     const players = {
                     one: {mark: options.x, ...obj1}, 
                     two: {mark: options.o, ...obj2},
