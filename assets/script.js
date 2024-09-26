@@ -25,8 +25,8 @@ function createGame(obj1, obj2) {
     const setMark = (xCoord, yCoord) => {
         let row = board[yCoord];
         (row[xCoord] === options.blank) ? row[xCoord] = players.current.mark : console.error("error attempting to place mark");
-        checkWin() ? declareWin(players) : changeTurn();
         marksMade++;
+        checkWin() ? declareWin(players) : changeTurn();
     }
 
     const getMark = (xCoord, yCoord) => {
@@ -63,7 +63,7 @@ function createGame(obj1, obj2) {
         return winBool;
     }
     
-    const declareWin = (players) => { 
+    const declareWin = (players) => {
         players.current.win(checkWin());
     }
 
@@ -168,11 +168,10 @@ const display = (function() {
         fill.setAttribute("draggable", false);
         e.target.appendChild(fill);
         let winBool = game.checkWin();
-
-        if(!winBool && game.turn() < maxSize()) marquee.textContent = "Turn " + game.turn() + ": Move placed at (" + ++xCoord + ", " + ++yCoord + ") - It is now " + game.players.current.name + "'s turn.";
-        else if(winBool) {
+        if(winBool) {
             marquee.textContent = game.players.current.name + " " + "(" + game.players.current.mark + ") wins on turn " + game.turn();
         }
+        else if(!winBool && game.turn() < maxSize()) marquee.textContent = "Turn " + game.turn() + ": Move placed at (" + ++xCoord + ", " + ++yCoord + ") - It is now " + game.players.current.name + "'s turn.";
         else marquee.textContent = "It's a draw. Reset to play again.";
     };
 
