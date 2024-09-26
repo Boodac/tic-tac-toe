@@ -1,5 +1,5 @@
 function createGame(obj1, obj2) {
-    const options = { blank: ".", x: "X" , o: "O", size: 3 };
+    const options = { blank: ".", x: "X" , o: "O", size: 13 };
     const players = {
                     one: {mark: options.x, ...obj1}, 
                     two: {mark: options.o, ...obj2},
@@ -161,7 +161,7 @@ const display = (function() {
         if(game.checkWin()) return;
         if(e.target.nodeName === "IMG") return;
         let xCoord = e.target.id.substring(1).substring(0, e.target.id.indexOf("-")-1);
-        let yCoord = e.target.id.substring(1).substring(e.target.id.indexOf("-"));
+        let yCoord = e.target.id.split("-")[1];
         game.setMark(xCoord, yCoord);
         const fill = document.createElement("img");
         fill.src = "./assets/" + game.getMark(xCoord, yCoord) + ".svg";
